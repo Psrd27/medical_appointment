@@ -23,10 +23,15 @@ form {
   background-color: #f8f8f8;
 }
 
+.input-box{
+ align-items:end;
+ position: float;
+ left:10px;
+
+}
 label {
   margin-bottom: 10px;
   font-weight: bold;
-  padding: 10px;
 }
 
 input {

@@ -1,10 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const app = express();
-const port = 5000;
+const port = 3001;
+const appointmentsModel = require('./models/appointments');
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/Medical_Appointment', {
+app.use(cors());
+app.use(express.json());
+
+// Connecting to MongoDB
+mongoose.connect('mongodb+srv://Psrd27:mongodb007!@appointments.ubn2zwp.mongodb.net/KPR_E-Med?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -15,53 +20,32 @@ mongoose.connect('mongodb://localhost:27017/Medical_Appointment', {
     console.error('Error connecting to MongoDB:', err);
   });
 
-// Define appointment schema
-const appointmentSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true
-  },
-  typeofcase: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  }
-});
 
-// Create appointment model
-const Appointment = mongoose.model('Appointment', appointmentSchema);
+app.get("/getAppointments",(req,res)=>{
+  appointmentsModel.find({},(err,result)=>{
+    if(err){
+      res.json(err);
+    }
+    else{
+      res.json(result);
+    }
 
-// Parse JSON request bodies
-app.use(express.json());
-
+  })
+})
 // Define API endpoint for saving appointments
-app.post('/api/appointments', (req, res) => {
-  const { name, email, typeofcase, description } = req.body;
-
-  const newAppointment = new Appointment({
-    name,
-    email,
-    typeofcase,
-    description
-  });
-
-  newAppointment.save()
-    .then(() => {
-      res.status(200).json({ message: 'Appointment data saved successfully' });
-    })
-    .catch((err) => {
-      res.status(500).json({ error: 'An error occurred while saving the appointment data' });
-    });
+app.post('/createAppointments', async (req, res) => {
+  const appointment = req.body;
+  const newAppointment = new appointmentsModel(appointment);
+  await newAppointment.save();
+  res.json(appointment);
+    // .then(() => {
+    //   res.status(200).json({ message: 'Appointment data saved successfully' });
+    // })
+    // .catch((err) => {
+    //   res.status(500).json({ error: 'An error occurred while saving the appointment data' });
+    // });
 });
 
-// Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
