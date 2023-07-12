@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
-const port = 3001;
+const port = 5000;
 const appointmentsModel = require('./models/appointments');
 
 app.use(cors());
@@ -21,30 +21,9 @@ mongoose.connect('mongodb+srv://Psrd27:mongodb007!@appointments.ubn2zwp.mongodb.
   });
 
 
-app.get("/getAppointments",(req,res)=>{
-  appointmentsModel.find({},(err,result)=>{
-    if(err){
-      res.json(err);
-    }
-    else{
-      res.json(result);
-    }
 
-  })
-})
-// Define API endpoint for saving appointments
-app.post('/createAppointments', async (req, res) => {
-  const appointment = req.body;
-  const newAppointment = new appointmentsModel(appointment);
-  await newAppointment.save();
-  res.json(appointment);
-    // .then(() => {
-    //   res.status(200).json({ message: 'Appointment data saved successfully' });
-    // })
-    // .catch((err) => {
-    //   res.status(500).json({ error: 'An error occurred while saving the appointment data' });
-    // });
-});
+const appointmentRouter =require('./routes/appointments');
+app.use('/appointments',appointmentRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
